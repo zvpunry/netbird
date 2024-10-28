@@ -7,9 +7,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/netbirdio/netbird/management/server/differs"
 	"github.com/r3labs/diff/v3"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/netbirdio/netbird/management/server/differs"
 
 	"github.com/netbirdio/netbird/management/proto"
 	"github.com/netbirdio/netbird/management/server/telemetry"
@@ -50,12 +51,12 @@ func (p *PeersUpdateManager) SendUpdate(ctx context.Context, peerID string, upda
 
 	// skip sending sync update to the peer if there is no change in update message,
 	// it will not check on turn credential refresh as we do not send network map or client posture checks
-	if update.NetworkMap != nil {
-		updated := p.handlePeerMessageUpdate(ctx, peerID, update)
-		if !updated {
-			return
-		}
-	}
+	//if update.NetworkMap != nil {
+	//	updated := p.handlePeerMessageUpdate(ctx, peerID, update)
+	//	if !updated {
+	//		return
+	//	}
+	//}
 
 	p.channelsMux.Lock()
 
