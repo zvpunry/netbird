@@ -7,9 +7,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/netbirdio/netbird/management/server/differs"
 	"github.com/r3labs/diff/v3"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/netbirdio/netbird/management/server/differs"
 
 	"github.com/netbirdio/netbird/management/proto"
 	"github.com/netbirdio/netbird/management/server/telemetry"
@@ -208,6 +209,7 @@ func (p *PeersUpdateManager) handlePeerMessageUpdate(ctx context.Context, peerID
 	p.channelsMux.RUnlock()
 
 	if lastSentUpdate != nil {
+		log.Infof(string(debug.Stack()))
 		updated, err := isNewPeerUpdateMessage(ctx, lastSentUpdate, update)
 		if err != nil {
 			log.WithContext(ctx).Errorf("error checking for SyncResponse updates: %v", err)
