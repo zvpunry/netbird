@@ -51,12 +51,13 @@ func (p *PeersUpdateManager) SendUpdate(ctx context.Context, peerID string, upda
 
 	// skip sending sync update to the peer if there is no change in update message,
 	// it will not check on turn credential refresh as we do not send network map or client posture checks
-	//if update.NetworkMap != nil {
-	//	updated := p.handlePeerMessageUpdate(ctx, peerID, update)
-	//	if !updated {
-	//		return
-	//	}
-	//}
+	if update.NetworkMap != nil {
+		log.Infof("Comparing peer update messages. Trace: %s", debug.Stack())
+		//	updated := p.handlePeerMessageUpdate(ctx, peerID, update)
+		//	if !updated {
+		//		return
+		//	}
+	}
 
 	p.channelsMux.Lock()
 
