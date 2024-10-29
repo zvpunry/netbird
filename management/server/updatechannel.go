@@ -209,7 +209,7 @@ func (p *PeersUpdateManager) handlePeerMessageUpdate(ctx context.Context, peerID
 	p.channelsMux.RUnlock()
 
 	if lastSentUpdate != nil {
-		log.Infof(string(debug.Stack()))
+		log.Infof("Comparing peer update messages. Trace: %s", debug.Stack())
 		updated, err := isNewPeerUpdateMessage(ctx, lastSentUpdate, update)
 		if err != nil {
 			log.WithContext(ctx).Errorf("error checking for SyncResponse updates: %v", err)
