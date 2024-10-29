@@ -15,6 +15,7 @@ import (
 	"net/url"
 	"os"
 	"path"
+	"runtime/pprof"
 	"slices"
 	"strings"
 	"time"
@@ -125,19 +126,25 @@ var (
 		RunE: func(cmd *cobra.Command, args []string) error {
 			flag.Parse()
 
-			go func() {
-				log.Info("Starting pprof server on :6060")
-				log.Info(http.ListenAndServe("localhost:6060", nil))
-			}()
+			f, err := os.Create("cpu_profile.prof")
+			if err != nil {
+				log.Fatal("could not create CPU profile: ", err)
+			}
+			defer f.Close()
 
-			time.Sleep(30 * time.Second)
+			// Start CPU profiling.
+			if err := pprof.StartCPUProfile(f); err != nil {
+				log.Fatal("could not start CPU profile: ", err)
+			}
+
+			time.AfterFunc(5*time.Minute, pprof.StopCPUProfile)
 
 			ctx, cancel := context.WithCancel(cmd.Context())
 			defer cancel()
 			//nolint
 			ctx = context.WithValue(ctx, formatter.ExecutionContextKey, formatter.SystemSource)
 
-			err := handleRebrand(cmd)
+			err = handleRebrand(cmd)
 			if err != nil {
 				return fmt.Errorf("failed to migrate files %v", err)
 			}
