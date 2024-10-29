@@ -125,6 +125,13 @@ var (
 		RunE: func(cmd *cobra.Command, args []string) error {
 			flag.Parse()
 
+			go func() {
+				log.Info("Starting pprof server on :6060")
+				log.Info(http.ListenAndServe("localhost:6060", nil))
+			}()
+
+			time.Sleep(30 * time.Second)
+
 			ctx, cancel := context.WithCancel(cmd.Context())
 			defer cancel()
 			//nolint
