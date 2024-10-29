@@ -6,6 +6,7 @@ import (
 	b64 "encoding/base64"
 	"fmt"
 	"net"
+	"runtime/debug"
 	"slices"
 	"strings"
 	"sync"
@@ -994,6 +995,8 @@ func (am *DefaultAccountManager) updateAccountPeers(ctx context.Context, account
 			log.WithContext(ctx).Tracef("peer %s doesn't have a channel, skipping network map update", peer.ID)
 			continue
 		}
+
+		log.Infof("account peers update for peer %s in account %s. Trace: %s", peer.ID, account.Id, debug.Stack())
 
 		wg.Add(1)
 		semaphore <- struct{}{}
