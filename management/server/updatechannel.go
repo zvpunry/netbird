@@ -7,9 +7,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/netbirdio/netbird/management/server/differs"
 	"github.com/r3labs/diff/v3"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/netbirdio/netbird/management/server/differs"
 
 	"github.com/netbirdio/netbird/management/proto"
 	"github.com/netbirdio/netbird/management/server/telemetry"
@@ -76,18 +77,18 @@ func (p *PeersUpdateManager) SendUpdate(ctx context.Context, peerID string, upda
 		p.peerUpdateMessage[peerID] = update
 	}
 
-	if channel, ok := p.peerChannels[peerID]; ok {
-		found = true
-		select {
-		case channel <- update:
-			log.WithContext(ctx).Debugf("update was sent to channel for peer %s", peerID)
-		default:
-			dropped = true
-			log.WithContext(ctx).Warnf("channel for peer %s is %d full or closed", peerID, len(channel))
-		}
-	} else {
-		log.WithContext(ctx).Debugf("peer %s has no channel", peerID)
-	}
+	// if channel, ok := p.peerChannels[peerID]; ok {
+	// 	found = true
+	// 	select {
+	// 	case channel <- update:
+	// 		log.WithContext(ctx).Debugf("update was sent to channel for peer %s", peerID)
+	// 	default:
+	// 		dropped = true
+	// 		log.WithContext(ctx).Warnf("channel for peer %s is %d full or closed", peerID, len(channel))
+	// 	}
+	// } else {
+	// 	log.WithContext(ctx).Debugf("peer %s has no channel", peerID)
+	// }
 }
 
 // CreateChannel creates a go channel for a given peer used to deliver updates relevant to the peer.
@@ -206,6 +207,8 @@ func (p *PeersUpdateManager) handlePeerMessageUpdate(ctx context.Context, peerID
 	p.channelsMux.RLock()
 	lastSentUpdate := p.peerUpdateMessage[peerID]
 	p.channelsMux.RUnlock()
+
+	lastSentUpdate = update
 
 	if lastSentUpdate != nil {
 		updated, err := isNewPeerUpdateMessage(ctx, lastSentUpdate, update)

@@ -990,10 +990,10 @@ func (am *DefaultAccountManager) updateAccountPeers(ctx context.Context, account
 	customZone := account.GetPeersCustomZone(ctx, am.dnsDomain)
 
 	for _, peer := range peers {
-		if !am.peersUpdateManager.HasChannel(peer.ID) {
-			log.WithContext(ctx).Tracef("peer %s doesn't have a channel, skipping network map update", peer.ID)
-			continue
-		}
+		// if !am.peersUpdateManager.HasChannel(peer.ID) {
+		// 	log.WithContext(ctx).Tracef("peer %s doesn't have a channel, skipping network map update", peer.ID)
+		// 	continue
+		// }
 
 		wg.Add(1)
 		semaphore <- struct{}{}
@@ -1002,7 +1002,7 @@ func (am *DefaultAccountManager) updateAccountPeers(ctx context.Context, account
 			defer func() { <-semaphore }()
 
 			postureChecks := am.getPeerPostureChecks(account, p)
-			remotePeerNetworkMap := account.GetPeerNetworkMap(ctx, p.ID, customZone, approvedPeersMap, am.metrics.AccountManagerMetrics())
+			remotePeerNetworkMap := account.GetPeerNetworkMap(ctx, p.ID, customZone, approvedPeersMap, nil)
 			update := toSyncResponse(ctx, nil, p, nil, nil, remotePeerNetworkMap, am.GetDNSDomain(), postureChecks, dnsCache)
 			am.peersUpdateManager.SendUpdate(ctx, p.ID, &UpdateMessage{Update: update, NetworkMap: remotePeerNetworkMap})
 		}(peer)
